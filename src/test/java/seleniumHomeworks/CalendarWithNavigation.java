@@ -45,7 +45,7 @@ public class CalendarWithNavigation {
         }
     }
 
-    //store the inputted date values to instance variables
+    //Store the inputted date values in instance variables
     public void getDate(String month, String date, String year) {
         this.month = month;
         this.date = date;
