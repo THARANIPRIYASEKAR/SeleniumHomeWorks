@@ -129,11 +129,11 @@ public class CalendarWithNavigation {
         try {
             c.openBrowser("https://syntaxprojects.com/jquery-date-picker-demo-homework.php");
             c.setDate("from","December", "2", "2023");
-            c.setDate("to","December", "2", "2023");
+            c.setDate("to","January", "5", "2026");
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {
-            c.closeBrowser();
+           // c.closeBrowser();
         }
 
     }
