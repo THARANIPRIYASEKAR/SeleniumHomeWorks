@@ -24,17 +24,12 @@ import java.util.List;
 public class CalendarWithNavigation {
 
     WebDriver driver;
-    String date;
-    String month;
-    String year;
 
     //open the browser
     public void openBrowser(String url) {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get(url);
-
-        //implicit/global wait
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
     }
 
@@ -45,74 +40,70 @@ public class CalendarWithNavigation {
         }
     }
 
-    //Store the inputted date values in instance variables
-    public void getDate(String month, String date, String year) {
-        this.month = month;
-        this.date = date;
-        this.year = year;
+    //set date
+    public void setDate(String dateType, String month, String date, String year) {
+
+        if(dateType.equals("from")){
+            WebElement fromDateInputBox = driver.findElement(By.xpath("//input[@id='from_date']"));
+            fromDateInputBox.click();
+        }
+        else if(dateType.equals("to")){
+            WebElement toDateInputBox = driver.findElement(By.xpath("//input[@id='to_date']"));
+            toDateInputBox.click();
+        }else{
+            System.out.println("Invalid date type");
+        }
+
+        selectYear(year);
+        selectMonth(month);
+        selectDate(date);
     }
 
-    //set fromdate
-    public void fromDate(String month, String date, String year) {
-        getDate(month, date, year);
-        WebElement fromDateInputBox = driver.findElement(By.xpath("//input[@id='from_date']"));
-        fromDateInputBox.click();
-        selectYear();
-    }
-
-    //set todate
-    public void toDate(String month, String date, String year) {
-        getDate(month, date, year);
-        WebElement toDateInputBox = driver.findElement(By.xpath("//input[@id='to_date']"));
-        toDateInputBox.click();
-        selectYear();
-    }
-
-    //compare the current year with inputted year
-    public void selectYear() {
+    // Navigate to the specified year
+    public void selectYear(String targetYear) {
 
         boolean notFound = true;
 
         while (notFound) {
-            WebElement year = driver.findElement(By.xpath("//div/span[@class='ui-datepicker-year']"));
+            WebElement currentYear = driver.findElement(By.xpath("//div/span[@class='ui-datepicker-year']"));
 
-            if (Integer.parseInt(this.year) > Integer.parseInt(year.getText())) {
+            if (Integer.parseInt(targetYear) > Integer.parseInt(currentYear.getText())) {
                 navigateToNext();
-            } else if (Integer.parseInt(this.year) < Integer.parseInt(year.getText())) {
+            } else if (Integer.parseInt(targetYear) < Integer.parseInt(currentYear.getText())) {
                 navigateToPrevious();
             } else {
-                notFound = false;
-                selectMonth();
+                notFound=false;
+                break;
             }
         }
     }
 
-    //compare the current month with inputted month
-    public void selectMonth() {
+    // Navigate to the specified month
+    public void selectMonth(String targetMonth) {
 
         boolean notFound = true;
         while (notFound) {
             WebElement month = driver.findElement(By.xpath("//div/span[@class='ui-datepicker-month']"));
-            int currentMonth = Month.valueOf(month.getText().toUpperCase()).getValue();
-            int monthToBeSelected = Month.valueOf(this.month.toUpperCase()).getValue();
+            int currentMonthValue = Month.valueOf(month.getText().toUpperCase()).getValue();
+            int targetMonthValue = Month.valueOf(targetMonth.toUpperCase()).getValue();
 
-            if (monthToBeSelected < currentMonth) {
+            if (targetMonthValue < currentMonthValue) {
                 navigateToPrevious();
-            } else if (monthToBeSelected > currentMonth) {
+            } else if (targetMonthValue > currentMonthValue) {
                 navigateToNext();
             } else {
-                notFound = false;
-                selectDate();
+                notFound=false;
+                break;
             }
         }
     }
 
-    //compare the current date with inputted date
-    public void selectDate() {
+    // Select the specified date
+    public void selectDate(String targetDate) {
         List<WebElement> dates = driver.findElements(By.xpath("//table/tbody/tr/td/a"));
         for (WebElement date : dates) {
             String currentDate = date.getText();
-            if (currentDate.equals(this.date)) {
+            if (currentDate.equals(targetDate)) {
                 date.click();
                 break;
             }
@@ -137,8 +128,8 @@ public class CalendarWithNavigation {
 
         try {
             c.openBrowser("https://syntaxprojects.com/jquery-date-picker-demo-homework.php");
-            c.fromDate("December", "2", "2023");
-            c.toDate("June", "10", "2027");
+            c.setDate("from","December", "2", "2023");
+            c.setDate("to","December", "2", "2023");
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {
